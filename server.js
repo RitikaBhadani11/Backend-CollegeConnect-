@@ -576,7 +576,22 @@ app.use(cors({
 app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
+// Root route
+app.get("/", (req, res) => {
+  res.json({
+    message: "🚀 CollegeConnect Backend API is Running!",
+    status: "success", 
+    database: mongoose.connection.readyState === 1 ? "connected" : "disconnected",
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      test: "/api/test",
+      health: "/health",
+      auth: "/api/auth",
+      events: "/api/events",
+      users: "/api/users"
+    }
+  });
+});
 // Static file serving
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/uploads", express.static(path.join(__dirname, "public", "uploads")));
@@ -584,10 +599,31 @@ app.use("/uploads/profile", express.static(path.join(__dirname, "public", "uploa
 app.use("/uploads/cover", express.static(path.join(__dirname, "public", "uploads", "cover")));
 
 // MongoDB Connection
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ Connected to MongoDB"))
-  .catch((err) => console.error("❌ MongoDB connection error:", err));
+// MongoDB Connection - SINGLE CONNECTION
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 30000, // 30 seconds
+  socketTimeoutMS: 45000, // 45 seconds
+})
+.then(() => console.log("✅ MongoDB Connected Successfully"))
+.catch((err) => {
+  console.error("❌ MongoDB connection error:", err.message);
+  console.log("💡 If data is working, this might be a temporary issue");
+});
 
+// MongoDB connection event handlers
+mongoose.connection.on('connected', () => {
+  console.log('🟢 MongoDB connected - ready for queries');
+});
+
+mongoose.connection.on('error', (err) => {
+  console.log('🔴 MongoDB connection error:', err);
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.log('🟡 MongoDB disconnected');
+});
 // API Routes
 
 app.get("/api/test", (req, res) => {
