@@ -589,8 +589,17 @@ mongoose.connect(process.env.MONGO_URI)
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 // API Routes
+
 app.get("/api/test", (req, res) => {
   res.json({ message: "Server is running correctly", timestamp: new Date().toISOString() });
+});
+// In your server.js - add this route
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
+  });
 });
 app.use("/api/auth", authRoutes);
 app.use("/api/profiles", profileRoutes);
