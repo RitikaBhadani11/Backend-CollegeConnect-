@@ -91,7 +91,7 @@
 const express = require("express")
 const router = express.Router()
 const userController = require("../controllers/userController")
-const { authMiddleware, roleMiddleware } = require("../middleware/authMiddleware")
+const { authMiddleware, roleMiddleware } = require("../middleware/authmiddleware")
 
 // Public routes
 router.get("/search", authMiddleware, userController.searchUsers)
