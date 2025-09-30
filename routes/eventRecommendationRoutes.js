@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const eventRecommendationController = require("../controllers/eventRecommendationController");
-const { authMiddleware } = require("../middleware/authMiddleware");
+const { authMiddleware } = require("../middleware/authmiddleware");
 
 // Protected routes
 router.get("/recommended", authMiddleware, eventRecommendationController.getRecommendedEvents);

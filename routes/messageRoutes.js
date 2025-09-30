@@ -1,7 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const messageController = require("../controllers/messageController")
-const { authMiddleware } = require("../middleware/authMiddleware")
+const { authMiddleware } = require("../middleware/authmiddleware")
 const multer = require("multer")
 const path = require("path")
 const fs = require("fs")
