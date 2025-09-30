@@ -580,6 +580,7 @@ app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 // Root route
+// Root route - UPDATED WITH COMPLETE ENDPOINTS
 app.get("/", (req, res) => {
   res.json({
     message: "🚀 CollegeConnect Backend API is Running!",
@@ -587,14 +588,24 @@ app.get("/", (req, res) => {
     database: mongoose.connection.readyState === 1 ? "connected" : "disconnected",
     timestamp: new Date().toISOString(),
     endpoints: {
-      test: "/api/test",
-      health: "/health",
       auth: "/api/auth",
+      profiles: "/api/profiles",
+      announcements: "/api/announcements",
+      achievements: "/api/achievements",
       events: "/api/events",
-      users: "/api/users"
-    }
+      posts: "/api/posts",
+      users: "/api/users",
+      messages: "/api/messages",
+      jobs: "/api/jobs",
+      event_recommendations: "/api/event-recommendations",
+      follow: "/api/users/follow",
+      test: "/api/test",
+      health: "/health"
+    },
+    total_endpoints: 12
   });
 });
+
 // Static file serving
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/uploads", express.static(path.join(__dirname, "public", "uploads")));
