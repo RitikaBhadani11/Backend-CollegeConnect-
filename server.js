@@ -568,12 +568,14 @@ const io = socketIo(server, {
 // Middleware
 app.use(cors({
   origin: [
-    'https://collegeconnect-frontend.onrender.com', // Add this
+    'https://collegeconnect-frontend-y1w5.onrender.com/', // Add this
     'http://localhost:3000',
     'http://localhost:5173'
   ],
   credentials: true,
-  // ... rest of config
+   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 
 app.use(morgan("dev"));
