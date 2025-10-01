@@ -1,4 +1,3 @@
-
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -32,10 +31,7 @@ const io = socketIo(server, {
   }
 });
 
-// Middleware
-
-
-// Enable CORS before all routes
+// CORS Middleware - ONLY ONCE
 app.use(cors({
   origin: [
     'https://collegeconnect-frontend-y1w5.onrender.com',
@@ -47,14 +43,12 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 
-// Handle preflight requests
 app.options('*', cors());
-
 app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
 // Root route
-// Root route - UPDATED WITH COMPLETE ENDPOINTS
 app.get("/", (req, res) => {
   res.json({
     message: "🚀 CollegeConnect Backend API is Running!",
@@ -87,20 +81,17 @@ app.use("/uploads/profile", express.static(path.join(__dirname, "public", "uploa
 app.use("/uploads/cover", express.static(path.join(__dirname, "public", "uploads", "cover")));
 
 // MongoDB Connection
-// MongoDB Connection - SINGLE CONNECTION
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 30000, // 30 seconds
-  socketTimeoutMS: 45000, // 45 seconds
+  serverSelectionTimeoutMS: 30000,
+  socketTimeoutMS: 45000,
 })
 .then(() => console.log("✅ MongoDB Connected Successfully"))
 .catch((err) => {
   console.error("❌ MongoDB connection error:", err.message);
-  console.log("💡 If data is working, this might be a temporary issue");
 });
 
-// MongoDB connection event handlers
 mongoose.connection.on('connected', () => {
   console.log('🟢 MongoDB connected - ready for queries');
 });
@@ -112,12 +103,12 @@ mongoose.connection.on('error', (err) => {
 mongoose.connection.on('disconnected', () => {
   console.log('🟡 MongoDB disconnected');
 });
-// API Routes
 
+// API Routes
 app.get("/api/test", (req, res) => {
   res.json({ message: "Server is running correctly", timestamp: new Date().toISOString() });
 });
-// In your server.js - add this route
+
 app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'healthy',
@@ -125,6 +116,7 @@ app.get('/health', (req, res) => {
     database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
   });
 });
+
 app.use("/api/auth", authRoutes);
 app.use("/api/profiles", profileRoutes);
 app.use("/api/announcements", announcementRoutes);
@@ -150,41 +142,10 @@ app.use((err, req, res, next) => {
 // Socket.io Configuration
 io.on("connection", (socket) => {
   console.log("New client connected");
-
   socket.on("join", (userId) => {
     socket.join(userId);
     console.log(`User ${userId} joined their room`);
   });
-
-  socket.on("sendMessage", async (data) => {
-    try {
-      const { message, conversationId, recipientId } = data;
-
-      io.to(recipientId).emit("newMessage", {
-        message,
-        conversationId,
-      });
-
-      io.to(recipientId).emit("messageDelivered", {
-        messageId: message._id,
-      });
-    } catch (error) {
-      console.error("Error handling message:", error);
-    }
-  });
-
-  socket.on("markAsRead", async (data) => {
-    try {
-      const { messageIds, senderId } = data;
-
-      io.to(senderId).emit("messagesRead", {
-        messageIds,
-      });
-    } catch (error) {
-      console.error("Error marking messages as read:", error);
-    }
-  });
-
   socket.on("disconnect", () => {
     console.log("Client disconnected");
   });
