@@ -566,7 +566,7 @@ const io = socketIo(server, {
 });
 
 // Middleware
-const cors = require('cors');
+
 
 // Enable CORS before all routes
 app.use(cors({
