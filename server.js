@@ -566,17 +566,22 @@ const io = socketIo(server, {
 });
 
 // Middleware
+const cors = require('cors');
+
+// Enable CORS before all routes
 app.use(cors({
   origin: [
-    'https://collegeconnect-frontend-y1w5.onrender.com/', // Add this
+    'https://collegeconnect-frontend-y1w5.onrender.com',
     'http://localhost:3000',
     'http://localhost:5173'
   ],
   credentials: true,
-   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
+
+// Handle preflight requests
+app.options('*', cors());
 
 app.use(morgan("dev"));
 app.use(bodyParser.json());
